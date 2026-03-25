@@ -110,6 +110,8 @@ Set:
 - ISP name
 - optional filters (communities, etc.)
 
+Or use the env file provided to set environment variables
+
 ---
 
 ### 6. Import BGP data
