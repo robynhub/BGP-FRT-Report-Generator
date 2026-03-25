@@ -1,5 +1,6 @@
 # BGP-FRT-Report-Generator
-A tool that generate a simple HTML5 report of BGP Full Routing Table gathered with pmbgpd
+A tool that generate a simple HTML5 report of BGP Full Routing Table gathered with pmbgpd.
+Feel free do adapt to your needs
 
   # How to use
   Step 1) Install pmacct suite
