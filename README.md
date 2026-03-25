@@ -223,8 +223,4 @@ Feel free to:
 - submit pull requests
 - fork and adapt to your needs
 
----
 
-## 📜 License
-
-Choose a license (e.g. MIT) and add it here.
