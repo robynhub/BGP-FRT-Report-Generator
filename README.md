@@ -10,7 +10,7 @@ The report provides a quick overview of:
 
 Designed for ISPs and network operators who want a simple and customizable visibility tool. It works by this flow:
 
-Route Reflector -> pmbgpd make dump every 300 sec -> import-pmbgpd-rib.sh import of JSON into DB -> generate_report.py use db to generate static HTML file
+Route Reflector -> pmbgpd make json dump every 300 sec -> import-pmbgpd-rib.sh import of JSON into DB (and delete the old ones) -> generate_report.py use db to generate static HTML file
 
 ---
 
