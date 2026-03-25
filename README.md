@@ -8,7 +8,9 @@ The report provides a quick overview of:
 - announcements (self / customers)
 - optional filtering (blackhole, mitigation, etc.)
 
-Designed for ISPs and network operators who want a simple and customizable visibility tool.
+Designed for ISPs and network operators who want a simple and customizable visibility tool. It works by this flow:
+
+Route Reflector -> pmbgpd -> JSON Dump Every 300 secs -> Import of JSON into DB -> Generation tool use db to generate static HTML file
 
 ---
 
