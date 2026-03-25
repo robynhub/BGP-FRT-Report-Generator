@@ -7,7 +7,7 @@ DBUSER="bgpmon"
 export PGPASSWORD='bgpmon'
 DBHOST="127.0.0.1"
 DUMPDIR="/var/spool/pmacct"
-LATEST="$(select_latest_stable_dump "$DUMPDIR" || true)"
+
 
 
 is_file_open_by_pmbgpd() {
@@ -65,6 +65,7 @@ select_latest_stable_dump() {
   return 1
 }
 
+LATEST="$(select_latest_stable_dump "$DUMPDIR" || true)"
 
 if [ -z "${LATEST}" ]; then
   echo "No dump found"
@@ -145,7 +146,7 @@ SQL
 LATEST="$(select_latest_stable_dump "$DUMPDIR" || true)"
 find "$DUMPDIR" -maxdepth 1 -type f -name 'bgp-table-*.json' ! -samefile "$LATEST" -delete
 
-/usr/local/bin/generate_report.py
+/opt/bgp-report/generate_report.py
 chown www-data:www-data /var/www/html/frt-report.html
 
 echo "Import completed. Only file kept: $LATEST"
