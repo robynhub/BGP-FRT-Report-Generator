@@ -176,6 +176,13 @@ Translations are stored in:
 /opt/bgp-report/i18n/
 ```
 
+But needed to accessible via browser so:
+
+```
+cp -R /opt/bgp-report/i18n /var/www/html/
+chown -R www-data:www-data /var/www/html/i18n
+```
+
 ---
 
 ## 🧩 Customization
