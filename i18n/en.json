@@ -1,0 +1,70 @@
+{
+  "report": {
+    "title": "FRT Report",
+    "generated_at": "Generated at",
+    "total_routes": "Total routes",
+    "language": "Language"
+  },
+  "cards": {
+    "ipv4_routes": "IPv4 routes",
+    "ipv6_routes": "IPv6 routes",
+    "avg_path_with_prepend": "Average AS-PATH with prepend",
+    "avg_path_without_prepend": "Average AS-PATH without prepend",
+    "routes_with_prepend": "Routes with prepend",
+    "self_announcements": "Self-originated announcements"
+  },
+  "charts": {
+    "current_route_count": "Current number of IPv4 / IPv6 routes",
+    "prefix_length_distribution": "IPv4 / IPv6 prefix length distribution",
+    "path_with_prepend": "AS-PATH length with prepend",
+    "path_without_prepend": "AS-PATH length without prepend",
+    "first_hop_v4": "IPv4 first-hop AS",
+    "second_hop_v4": "IPv4 second-hop AS",
+    "first_hop_v6": "IPv6 first-hop AS",
+    "second_hop_v6": "IPv6 second-hop AS"
+  },
+  "stats": {
+    "ipv4_average": "IPv4 average",
+    "ipv6_average": "IPv6 average",
+    "median": "median",
+    "p95": "p95"
+  },
+  "tables": {
+    "top_communities": "Top communities",
+    "community": "Community",
+    "count": "Count",
+    "percent_total": "% total",
+    "ipv4": "IPv4",
+    "ipv6": "IPv6",
+    "top_origin_as": "Top origin AS",
+    "origin_as": "Origin AS",
+    "top_next_hops": "Top next-hop",
+    "next_hop": "Next-hop",
+    "routes_without_communities": "Routes without communities",
+    "afi": "AFI",
+    "prefix": "Prefix",
+    "communities": "Communities",
+    "total_routes": "Total routes",
+    "as_path": "AS-PATH"
+  },
+  "sections": {
+    "operational_stats": "Operational statistics",
+    "blackhole_routes": "Blackhole routes",
+    "blackhole_route_list": "Blackhole route list",
+    "mitigation_routes": "Anti-DDoS mitigation routes",
+    "mitigation_route_list": "Anti-DDoS route list",
+    "self_announcements": "Self announcements",
+    "customer_announcements": "Customer announcements"
+  },
+  "tags": {
+    "routes_without_communities": "Routes without communities",
+    "ipv4_with_prepend": "IPv4 with prepend",
+    "ipv6_with_prepend": "IPv6 with prepend",
+    "self_community": "Self community",
+    "customer_community": "Customer community",
+    "community": "community"
+  },
+  "footer": {
+    "generated_for": "Generated for"
+  }
+}
