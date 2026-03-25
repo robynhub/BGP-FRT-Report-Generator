@@ -82,7 +82,6 @@ sudo -u postgres createdb bgp_report
 Then import the schema:
 
 ```bash
-mkdir -p /opt/bgp-report/schema
 psql bgp_report < /opt/bgp-report/schema/schema.sql
 ```
 
