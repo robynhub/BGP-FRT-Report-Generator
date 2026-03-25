@@ -31,6 +31,8 @@ Route Reflector -> pmbgpd make json dump every 300 sec -> import-pmbgpd-rib.sh i
 - PostgreSQL
 - pmacct (with `pmbgpd`)
 - Bash (for helper scripts)
+- lsof
+- jq
 
 ---
 
