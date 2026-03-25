@@ -1,0 +1,2 @@
+*/10 * * * * /usr/local/bin/import-pmbgpd-rib.sh
+2 0 1 * *  /usr/local/bin/update-as2org.sh
