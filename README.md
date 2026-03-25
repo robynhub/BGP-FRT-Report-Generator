@@ -126,7 +126,7 @@ Download and Run the import script periodically to load RIB snapshots into Postg
 ```
 
 Suggested: every 5–10 minutes via cron. 
-If you need there is an example in the example directory.
+If you need there is an example crontab in the example directory.
 
 This script:
 - processes JSON dumps from `pmbgpd`
