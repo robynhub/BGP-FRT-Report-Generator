@@ -1,0 +1,70 @@
+{
+  "report": {
+    "title": "Report FRT",
+    "generated_at": "Generato il",
+    "total_routes": "Rotte totali",
+    "language": "Lingua"
+  },
+  "cards": {
+    "ipv4_routes": "Rotte IPv4",
+    "ipv6_routes": "Rotte IPv6",
+    "avg_path_with_prepend": "AS-PATH medio con prepend",
+    "avg_path_without_prepend": "AS-PATH medio senza prepend",
+    "routes_with_prepend": "Rotte con prepend",
+    "self_announcements": "Annunci originati internamente"
+  },
+  "charts": {
+    "current_route_count": "Numero attuale di rotte IPv4 / IPv6",
+    "prefix_length_distribution": "Distribuzione prefix length IPv4 / IPv6",
+    "path_with_prepend": "AS-PATH length con prepend",
+    "path_without_prepend": "AS-PATH length senza prepend",
+    "first_hop_v4": "Primo hop AS IPv4",
+    "second_hop_v4": "Secondo hop AS IPv4",
+    "first_hop_v6": "Primo hop AS IPv6",
+    "second_hop_v6": "Secondo hop AS IPv6"
+  },
+  "stats": {
+    "ipv4_average": "IPv4 media",
+    "ipv6_average": "IPv6 media",
+    "median": "mediana",
+    "p95": "p95"
+  },
+  "tables": {
+    "top_communities": "Top community",
+    "community": "Community",
+    "count": "Count",
+    "percent_total": "% totale",
+    "ipv4": "IPv4",
+    "ipv6": "IPv6",
+    "top_origin_as": "Top Origin AS",
+    "origin_as": "Origin AS",
+    "top_next_hops": "Top Next-Hop",
+    "next_hop": "Next-Hop",
+    "routes_without_communities": "Route senza community",
+    "afi": "AFI",
+    "prefix": "Prefix",
+    "communities": "Communities",
+    "total_routes": "Totale rotte",
+    "as_path": "AS-PATH"
+  },
+  "sections": {
+    "operational_stats": "Statistiche operative",
+    "blackhole_routes": "Rotte di blackhole",
+    "blackhole_route_list": "Elenco rotte blackhole",
+    "mitigation_routes": "Rotte in mitigazione Anti-DDoS",
+    "mitigation_route_list": "Elenco rotte Anti-DDoS",
+    "self_announcements": "Annunci interni",
+    "customer_announcements": "Annunci clienti"
+  },
+  "tags": {
+    "routes_without_communities": "Route senza community",
+    "ipv4_with_prepend": "IPv4 con prepend",
+    "ipv6_with_prepend": "IPv6 con prepend",
+    "self_community": "Community interna",
+    "customer_community": "Community clienti",
+    "community": "community"
+  },
+  "footer": {
+    "generated_for": "Generato per"
+  }
+}
