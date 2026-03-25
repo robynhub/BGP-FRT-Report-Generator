@@ -34,13 +34,17 @@ Designed for ISPs and network operators who want a simple and customizable visib
 
 ## 🚀 Setup
 
-### 1. Install pmacct
+### 1. Clone Repo
 
-Install pmacct and ensure `pmbgpd` is available.
+Clone repo,  move to a specific folder and make executable every script
 
 Example (Debian/Ubuntu):
 ```bash
-apt install pmacct
+cd /opt
+git clone https://github.com/robynhub/BGP-FRT-Report-Generator.git
+mv BGP-FRT-Report-Generator/ bgp-report
+cd bgp-report
+chmod +x *.sh *.py
 ```
 
 ---
@@ -53,6 +57,12 @@ An example configuration is available in:
 
 ```
 example/pmbgpd.conf
+```
+
+pick a folder to put BGP dumps. For example:
+
+```
+mkdir -p /var/spool/pmacct/
 ```
 
 ---
