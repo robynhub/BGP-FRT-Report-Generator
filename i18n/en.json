@@ -18,9 +18,9 @@
     "path_with_prepend": "AS-PATH length with prepend",
     "path_without_prepend": "AS-PATH length without prepend",
     "first_hop_v4": "IPv4 first-hop AS",
-    "second_hop_v4": "IPv4 second-hop AS",
+    "second_hop_v4": "IPv4 Transit Analysis",
     "first_hop_v6": "IPv6 first-hop AS",
-    "second_hop_v6": "IPv6 second-hop AS"
+    "second_hop_v6": "IPv6 Transit Analysis"
   },
   "stats": {
     "ipv4_average": "IPv4 average",
