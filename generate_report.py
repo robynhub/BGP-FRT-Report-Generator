@@ -43,10 +43,13 @@ TOP_N_ORIGIN_AS = int(os.getenv("BGP_REPORT_TOP_N_ORIGIN_AS", "12"))
 TOP_N_NEXT_HOPS = int(os.getenv("BGP_REPORT_TOP_N_NEXT_HOPS", "12"))
 
 
+
+
 HTML_TEMPLATE = r"""<!doctype html>
 <html lang="{{ default_lang }}">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="refresh" content="300">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ title }}</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -212,7 +215,7 @@ HTML_TEMPLATE = r"""<!doctype html>
     <div class="subtitle">
       <span data-i18n="report.generated_at">Generated at</span>:
       <span class="mono" id="generated-at" data-generated-at="{{ generated_at_iso }}">{{ generated_at }}</span>
-      <span class="mono" id="generated-ago"></span> ·
+      (<span class="mono" id="generated-ago"></span> <span data-i18n='report.ago'>ago</span>) ·
       <span data-i18n="report.total_routes">Total routes</span>:
       <span class="mono">{{ total_routes }}</span>
     </div>
@@ -858,7 +861,7 @@ makeBar('barPrefixLen', {{ prefix_len_labels|safe }}, [
     const now = new Date();
     const diffMs = now - generatedAt;
     const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
-    generatedAgoEl.textContent = `(${diffMinutes} min)`;
+    generatedAgoEl.textContent = `${diffMinutes} min`;
   }
 
   render();
