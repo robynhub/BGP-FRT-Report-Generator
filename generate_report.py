@@ -177,6 +177,13 @@ HTML_TEMPLATE = r"""<!doctype html>
       max-width: 520px;
       margin: 0 auto;
     }
+    .chart-wrap.chart-wrap-wide {
+      max-width: 1000px;
+    }
+    .chart-wrap.chart-wrap-tall canvas {
+      max-height: 840px;
+      min-height: 840px;
+    }
     .mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
@@ -282,25 +289,18 @@ HTML_TEMPLATE = r"""<!doctype html>
     </div>
   </div>
 
-  <div class="grid-4">
+  <div class="grid-1">
     <div class="panel">
-      <h2 data-i18n="charts.first_hop_v4">IPv4 first-hop AS</h2>
-      <canvas id="pieFirstHopV4"></canvas>
+      <h2 data-i18n="charts.second_hop_v4">IPv4 Transit Analysis AS</h2>
+      <div class="chart-wrap chart-wrap-wide chart-wrap-tall">
+        <canvas id="pieSecondHopV4"></canvas>
+      </div>
     </div>
     <div class="panel">
-      <h2 data-i18n="charts.second_hop_v4">IPv4 second-hop AS</h2>
-      <canvas id="pieSecondHopV4"></canvas>
-    </div>
-  </div>
-
-  <div class="grid-4">
-    <div class="panel">
-      <h2 data-i18n="charts.first_hop_v6">IPv6 first-hop AS</h2>
-      <canvas id="pieFirstHopV6"></canvas>
-    </div>
-    <div class="panel">
-      <h2 data-i18n="charts.second_hop_v6">IPv6 second-hop AS</h2>
-      <canvas id="pieSecondHopV6"></canvas>
+      <h2 data-i18n="charts.second_hop_v6">IPv6 Transit Analysis</h2>
+      <div class="chart-wrap chart-wrap-wide chart-wrap-tall">
+        <canvas id="pieSecondHopV6"></canvas>
+      </div>
     </div>
   </div>
 
@@ -649,11 +649,181 @@ function makeBar(id, labels, datasets, stacked=false) {
   });
 }
 
+function generateColorPalette(n) {
+  const colors = [];
+  for (let i = 0; i < n; i++) {
+    const hue = (i * 360 / Math.max(n, 1)) % 360;
+    colors.push(`hsl(${hue}, 70%, 60%)`);
+  }
+  return colors;
+}
+
+function shadeColor(hsl, deltaLightness) {
+  const match = hsl.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/);
+  if (!match) {
+    return hsl;
+  }
+
+  const h = match[1];
+  const s = match[2];
+  let l = parseFloat(match[3]);
+  l = Math.max(28, Math.min(82, l + deltaLightness));
+  return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function makeNestedDoughnut(id, innerLabels, innerValues, outerLabels, outerValues, outerParents) {
+  const baseColors = generateColorPalette(innerLabels.length);
+  const parentToIndex = new Map(innerLabels.map((label, idx) => [label, idx]));
+  const childOffsets = new Map();
+
+  const innerColors = baseColors.slice();
+  const outerColors = outerParents.map((parent) => {
+    const parentIndex = parentToIndex.has(parent) ? parentToIndex.get(parent) : 0;
+    const baseColor = baseColors[parentIndex] || 'hsl(210, 70%, 60%)';
+    const currentOffset = childOffsets.get(parent) || 0;
+    childOffsets.set(parent, currentOffset + 1);
+    const lightnessShift = ((currentOffset % 8) - 3) * 5;
+    return shadeColor(baseColor, lightnessShift);
+  });
+
+  const originalInnerValues = innerValues.slice();
+  const originalOuterValues = outerValues.slice();
+  const hiddenParents = new Set();
+
+  const chart = new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      labels: [],
+      datasets: [
+     
+        {
+          label: 'Second hop',
+          ring: 'outer',
+          data: outerValues.slice(),
+          labels: outerLabels,
+          parents: outerParents,
+          backgroundColor: outerColors,
+          borderColor: '#e2e8f0',
+          borderWidth: 1,
+          spacing: 0,
+          hoverOffset: 0,
+          weight: 1
+        },
+        {
+          label: 'First hop',
+          ring: 'inner',
+          data: innerValues.slice(),
+          labels: innerLabels,
+          backgroundColor: innerColors,
+          borderColor: '#e2e8f0',
+          borderWidth: 1,
+          spacing: 0,
+          hoverOffset: 0,
+          weight: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '10%',
+      animation: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: '#e5e7eb',
+            boxWidth: 26,
+            boxHeight: 12,
+            padding: 14,
+            font: {
+              size: 12
+            },
+            generateLabels: function(chart) {
+              const dataset = chart.data.datasets[1];
+              return dataset.labels.map((label, i) => ({
+                text: label,
+                fillStyle: dataset.backgroundColor[i],
+                strokeStyle: dataset.backgroundColor[i],
+                fontColor: '#e5e7eb',
+                lineWidth: 1,
+                hidden: hiddenParents.has(label),
+                index: i,
+                datasetIndex: 0
+              }));
+            }
+          },
+          onClick: function(e, legendItem, legend) {
+            const chart = legend.chart;
+            const index = legendItem.index;
+          
+            const metaInner = chart.getDatasetMeta(1); // first hop
+            const metaOuter = chart.getDatasetMeta(0); // second hop
+          
+            const isVisible = !metaInner.data[index].hidden;
+          
+            // toggle first hop
+            metaInner.data[index].hidden = isVisible;
+          
+            // toggle tutti i second hop associati
+            metaOuter.data.forEach((arc, i) => {
+              if (chart.data.datasets[0].parents[i] === chart.data.datasets[1].labels[index]) {
+                arc.hidden = isVisible;
+              }
+            });
+          
+            chart.update();
+          }
+        },
+        tooltip: {
+          callbacks: {
+            title: function() {
+              return '';
+            },
+            label: function(context) {
+              const ds = context.dataset;
+              const idx = context.dataIndex;
+              const value = context.raw;
+
+              if (!value) {
+                return '';
+              }
+
+              if (ds.ring === 'inner') {
+                return `${ds.labels[idx]}: ${value} prefixes`;
+              }
+
+              return `${ds.parents[idx]} → ${ds.labels[idx]}: ${value} prefixes`;
+            }
+          },
+          filter: function(context) {
+            return !!context.raw;
+          }
+        }
+      }
+    }
+  });
+
+  return chart;
+}
+
 makePie('pieRoutes', {{ pie_routes_labels|safe }}, {{ pie_routes_values|safe }});
-makePie('pieFirstHopV4', {{ first_hop_v4_labels|safe }}, {{ first_hop_v4_values|safe }});
-makePie('pieFirstHopV6', {{ first_hop_v6_labels|safe }}, {{ first_hop_v6_values|safe }});
-makePie('pieSecondHopV4', {{ second_hop_v4_labels|safe }}, {{ second_hop_v4_values|safe }});
-makePie('pieSecondHopV6', {{ second_hop_v6_labels|safe }}, {{ second_hop_v6_values|safe }});
+makeNestedDoughnut(
+  'pieSecondHopV4',
+  {{ second_hop_v4_inner_labels|safe }},
+  {{ second_hop_v4_inner_values|safe }},
+  {{ second_hop_v4_outer_labels|safe }},
+  {{ second_hop_v4_outer_values|safe }},
+  {{ second_hop_v4_outer_parents|safe }}
+);
+makeNestedDoughnut(
+  'pieSecondHopV6',
+  {{ second_hop_v6_inner_labels|safe }},
+  {{ second_hop_v6_inner_values|safe }},
+  {{ second_hop_v6_outer_labels|safe }},
+  {{ second_hop_v6_outer_values|safe }},
+  {{ second_hop_v6_outer_parents|safe }}
+);
 makePie('pieBlackholePrefixLengths', {{ blackhole_prefix_labels|safe }}, {{ blackhole_prefix_values|safe }});
 makePie('pieMitigationPrefixLengths', {{ mitigation_prefix_labels|safe }}, {{ mitigation_prefix_values|safe }});
 
@@ -880,13 +1050,43 @@ def asn_label(asn, asn_name_map):
     return f"AS{asn_int}"
 
 
-def hop_pair_label(first_asn, second_asn, asn_name_map):
-    if first_asn is None or second_asn is None:
-        return ""
-    org = asn_name_map.get(second_asn)
-    if org:
-        return f"AS{first_asn} - AS{second_asn} - {org}"
-    return f"AS{first_asn} - AS{second_asn}"
+def build_nested_hop_chart(first_hop_counter, second_hop_tree, top_n_first=TOP_N_HOPS, top_n_second_per_first=None):
+    first_items = first_hop_counter.most_common(top_n_first)
+
+    inner_labels = []
+    inner_values = []
+
+    outer_labels = []
+    outer_values = []
+    outer_parents = []
+
+    for first_label, first_count in first_items:
+        inner_labels.append(first_label)
+        inner_values.append(first_count)
+
+        second_counter = second_hop_tree.get(first_label, Counter())
+        second_items = second_counter.most_common(top_n_second_per_first)
+
+        consumed = 0
+        for second_label, second_count in second_items:
+            outer_labels.append(second_label)
+            outer_values.append(second_count)
+            outer_parents.append(first_label)
+            consumed += second_count
+
+        remaining = first_count - consumed
+        if remaining > 0:
+            outer_labels.append("Other")
+            outer_values.append(remaining)
+            outer_parents.append(first_label)
+
+    return {
+        "inner_labels": json.dumps(inner_labels),
+        "inner_values": json.dumps(inner_values),
+        "outer_labels": json.dumps(outer_labels),
+        "outer_values": json.dumps(outer_values),
+        "outer_parents": json.dumps(outer_parents),
+    }
 
 
 def sql_fetch_rows():
@@ -932,8 +1132,8 @@ def build_report():
 
     first_hop_v4 = Counter()
     first_hop_v6 = Counter()
-    second_hop_v4 = Counter()
-    second_hop_v6 = Counter()
+    second_hop_tree_v4 = defaultdict(Counter)
+    second_hop_tree_v6 = defaultdict(Counter)
 
     path_with_v4 = []
     path_with_v6 = []
@@ -1005,18 +1205,19 @@ def build_report():
                 routes_with_prepend_v6 += 1
 
         if len(path_nums) >= 1:
-            label = asn_label(path_nums[0], asn_name_map)
+            first_label = asn_label(path_nums[0], asn_name_map)
             if afi == 1:
-                first_hop_v4[label] += 1
+                first_hop_v4[first_label] += 1
             elif afi == 2:
-                first_hop_v6[label] += 1
+                first_hop_v6[first_label] += 1
 
         if len(path_nums) >= 2:
-            label = hop_pair_label(path_nums[0], path_nums[1], asn_name_map)
+            first_label = asn_label(path_nums[0], asn_name_map)
+            second_label = asn_label(path_nums[1], asn_name_map)
             if afi == 1:
-                second_hop_v4[label] += 1
+                second_hop_tree_v4[first_label][second_label] += 1
             elif afi == 2:
-                second_hop_v6[label] += 1
+                second_hop_tree_v6[first_label][second_label] += 1
 
         plen = prefix_length(prefix, afi)
         if plen is not None:
@@ -1100,6 +1301,17 @@ def build_report():
     prefix_len_v4 = [prefixlen_v4.get(str(k), 0) for k in prefix_len_keys]
     prefix_len_v6 = [prefixlen_v6.get(str(k), 0) for k in prefix_len_keys]
 
+    nested_second_hop_v4 = build_nested_hop_chart(
+        first_hop_v4,
+        second_hop_tree_v4,
+        top_n_first=TOP_N_HOPS,
+    )
+    nested_second_hop_v6 = build_nested_hop_chart(
+        first_hop_v6,
+        second_hop_tree_v6,
+        top_n_first=TOP_N_HOPS,
+    )
+
     context = {
         "title": REPORT_TITLE,
         "isp_name": ISP_NAME,
@@ -1152,14 +1364,16 @@ def build_report():
         "customer_rows": customer_rows,
         "pie_routes_labels": json.dumps(["IPv4", "IPv6"]),
         "pie_routes_values": json.dumps([ipv4_count, ipv6_count]),
-        "first_hop_v4_labels": json.dumps([k for k, _ in first_hop_v4.most_common(TOP_N_HOPS)]),
-        "first_hop_v4_values": json.dumps([v for _, v in first_hop_v4.most_common(TOP_N_HOPS)]),
-        "first_hop_v6_labels": json.dumps([k for k, _ in first_hop_v6.most_common(TOP_N_HOPS)]),
-        "first_hop_v6_values": json.dumps([v for _, v in first_hop_v6.most_common(TOP_N_HOPS)]),
-        "second_hop_v4_labels": json.dumps([k for k, _ in second_hop_v4.most_common(TOP_N_HOPS)]),
-        "second_hop_v4_values": json.dumps([v for _, v in second_hop_v4.most_common(TOP_N_HOPS)]),
-        "second_hop_v6_labels": json.dumps([k for k, _ in second_hop_v6.most_common(TOP_N_HOPS)]),
-        "second_hop_v6_values": json.dumps([v for _, v in second_hop_v6.most_common(TOP_N_HOPS)]),
+        "second_hop_v4_inner_labels": nested_second_hop_v4["inner_labels"],
+        "second_hop_v4_inner_values": nested_second_hop_v4["inner_values"],
+        "second_hop_v4_outer_labels": nested_second_hop_v4["outer_labels"],
+        "second_hop_v4_outer_values": nested_second_hop_v4["outer_values"],
+        "second_hop_v4_outer_parents": nested_second_hop_v4["outer_parents"],
+        "second_hop_v6_inner_labels": nested_second_hop_v6["inner_labels"],
+        "second_hop_v6_inner_values": nested_second_hop_v6["inner_values"],
+        "second_hop_v6_outer_labels": nested_second_hop_v6["outer_labels"],
+        "second_hop_v6_outer_values": nested_second_hop_v6["outer_values"],
+        "second_hop_v6_outer_parents": nested_second_hop_v6["outer_parents"],
         "hist_with_labels": json.dumps(hist_with_labels),
         "hist_with_v4": json.dumps(hist_with_v4),
         "hist_with_v6": json.dumps(hist_with_v6),
@@ -1202,3 +1416,4 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"Error while generating the report: {exc}", file=sys.stderr)
         sys.exit(1)
+
