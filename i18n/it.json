@@ -2,7 +2,8 @@
   "report": {
     "generated_at": "Generato il",
     "total_routes": "Rotte totali",
-    "language": "Lingua"
+    "language": "Lingua",
+    "ago": "fa"
   },
   "cards": {
     "ipv4_routes": "Rotte IPv4",
