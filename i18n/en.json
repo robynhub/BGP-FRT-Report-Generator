@@ -2,7 +2,8 @@
   "report": {
     "generated_at": "Generated at",
     "total_routes": "Total routes",
-    "language": "Language"
+    "language": "Language",
+    "ago": "ago"
   },
   "cards": {
     "ipv4_routes": "IPv4 routes",
